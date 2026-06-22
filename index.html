@@ -290,10 +290,10 @@
       standings:[["NED",4,"+4"],["JPN",4,"+4"],["SWE",3,"0"],["TUN",0,"−8"]] },
     { id:"G", name:"GROUP G", layout:["BEL","EGY","IRN","NZL"],
       teams:{ BEL:{n:"Belgium",c:"be"}, EGY:{n:"Egypt",c:"eg"}, IRN:{n:"Iran",c:"ir"}, NZL:{n:"New Zealand",c:"nz"} },
-      standings:[["NZL",1,"0"],["IRN",1,"0"],["BEL",1,"0"],["EGY",1,"0"]] },
+      standings:[["EGY",4,"+2"],["IRN",2,"0"],["BEL",2,"0"],["NZL",1,"−2"]] },
     { id:"H", name:"GROUP H", layout:["ESP","CPV","KSA","URU"],
       teams:{ ESP:{n:"Spain",c:"es"}, CPV:{n:"Cape Verde",c:"cv"}, KSA:{n:"Saudi Arabia",c:"sa"}, URU:{n:"Uruguay",c:"uy"} },
-      standings:[["ESP",4,"+4"],["CPV",1,"0"],["URU",1,"0"],["KSA",1,"−4"]] },
+      standings:[["ESP",4,"+4"],["URU",2,"0"],["CPV",2,"0"],["KSA",1,"−4"]] },
     { id:"I", name:"GROUP I", layout:["FRA","SEN","IRQ","NOR"],
       teams:{ FRA:{n:"France",c:"fr"}, SEN:{n:"Senegal",c:"sn"}, IRQ:{n:"Iraq",c:"iq"}, NOR:{n:"Norway",c:"no"} },
       standings:[["NOR",3,"+3"],["FRA",3,"+2"],["SEN",0,"−2"],["IRQ",0,"−3"]] },
@@ -360,15 +360,15 @@
     // Group G
     {stage:"group",grp:"G",h:"BEL",a:"EGY",s:"1–1",st:"played",  d:"2026-06-15",t:"12:00",tz:-7,host:"us",v:"Lumen Field, Seattle"},
     {stage:"group",grp:"G",h:"IRN",a:"NZL",s:"2–2",st:"played",  d:"2026-06-15",t:"18:00",tz:-7,host:"us",v:"SoFi Stadium, Inglewood"},
-    {stage:"group",grp:"G",h:"BEL",a:"IRN",s:"vs", st:"upcoming",d:"2026-06-21",t:"12:00",tz:-7,host:"us",v:"SoFi Stadium, Inglewood"},
-    {stage:"group",grp:"G",h:"NZL",a:"EGY",s:"vs", st:"upcoming",d:"2026-06-21",t:"18:00",tz:-7,host:"ca",v:"BC Place, Vancouver"},
+    {stage:"group",grp:"G",h:"BEL",a:"IRN",s:"0–0",st:"played",  d:"2026-06-21",t:"12:00",tz:-7,host:"us",v:"SoFi Stadium, Inglewood"},
+    {stage:"group",grp:"G",h:"NZL",a:"EGY",s:"1–3",st:"played",  d:"2026-06-21",t:"18:00",tz:-7,host:"ca",v:"BC Place, Vancouver"},
     {stage:"group",grp:"G",h:"EGY",a:"IRN",s:"vs", st:"upcoming",d:"2026-06-26",t:"20:00",tz:-7,host:"us",v:"Lumen Field, Seattle"},
     {stage:"group",grp:"G",h:"NZL",a:"BEL",s:"vs", st:"upcoming",d:"2026-06-26",t:"20:00",tz:-7,host:"ca",v:"BC Place, Vancouver"},
     // Group H
     {stage:"group",grp:"H",h:"ESP",a:"CPV",s:"0–0",st:"played",  d:"2026-06-15",t:"17:00",tz:-4,host:"us",v:"Mercedes-Benz Stadium, Atlanta"},
     {stage:"group",grp:"H",h:"KSA",a:"URU",s:"1–1",st:"played",  d:"2026-06-15",t:"21:00",tz:-4,host:"us",v:"Hard Rock Stadium, Miami"},
     {stage:"group",grp:"H",h:"ESP",a:"KSA",s:"4–0",st:"played",  d:"2026-06-21",t:"12:00",tz:-4,host:"us",v:"Mercedes-Benz Stadium, Atlanta"},
-    {stage:"group",grp:"H",h:"URU",a:"CPV",s:"vs", st:"upcoming",d:"2026-06-21",t:"18:00",tz:-4,host:"us",v:"Hard Rock Stadium, Miami"},
+    {stage:"group",grp:"H",h:"URU",a:"CPV",s:"2–2",st:"played",  d:"2026-06-21",t:"18:00",tz:-4,host:"us",v:"Hard Rock Stadium, Miami"},
     {stage:"group",grp:"H",h:"URU",a:"ESP",s:"vs", st:"upcoming",d:"2026-06-26",t:"19:00",tz:-6,host:"mx",v:"Estadio Akron, Guadalajara"},
     {stage:"group",grp:"H",h:"CPV",a:"KSA",s:"vs", st:"upcoming",d:"2026-06-26",t:"19:00",tz:-5,host:"us",v:"NRG Stadium, Houston"},
     // Group I
@@ -492,7 +492,10 @@
     34:{g:[],r:[],s:"Curaçao goalkeeper Eloy Room made 15 saves to earn the World Cup debutants a historic goalless draw. Ecuador had 15 shots without scoring, with Enner Valencia guilty of two glaring misses."},
     36:{g:[{t:"NED",p:"Brian Brobbey",m:"5"},{t:"NED",p:"Brian Brobbey",m:"17"},{t:"NED",p:"Cody Gakpo",m:"47"},{t:"NED",p:"Cody Gakpo",m:"54"},{t:"SWE",p:"Anthony Elanga",m:"59"},{t:"NED",p:"Crysencio Summerville",m:"89"}],r:[],s:"Brian Brobbey and Cody Gakpo each scored twice as the Netherlands swept Sweden aside in Houston to go top of Group F. Elanga pulled one back before Summerville completed the rout off the bench."},
     35:{g:[{t:"JPN",p:"Daichi Kamada",m:"4"},{t:"JPN",p:"Ayase Ueda",m:"30"},{t:"JPN",p:"Junya Ito",m:"69"},{t:"JPN",p:"Ayase Ueda",m:"83"}],r:[],s:"Japan made history as the first AFC side to score four in a World Cup match, Ayase Ueda netting twice. The win eliminates Tunisia and puts Japan level on points atop Group F."},
-    40:{g:[{t:"ESP",p:"Lamine Yamal",m:"10"},{t:"ESP",p:"Mikel Oyarzabal",m:"21"},{t:"ESP",p:"Mikel Oyarzabal",m:"24"},{t:"ESP",p:"Hassan Al-Tambakti",m:"48",type:"og"}],r:[],s:"Spain were ruthless, Lamine Yamal opening early before Mikel Oyarzabal struck twice in three first-half minutes. An Al-Tambakti own goal just after the break completed a 4–0 win that sends Spain top of Group H and leaves Saudi Arabia bottom."}
+    40:{g:[{t:"ESP",p:"Lamine Yamal",m:"10"},{t:"ESP",p:"Mikel Oyarzabal",m:"21"},{t:"ESP",p:"Mikel Oyarzabal",m:"24"},{t:"ESP",p:"Hassan Al-Tambakti",m:"48",type:"og"}],r:[],s:"Spain were ruthless, Lamine Yamal opening early before Mikel Oyarzabal struck twice in three first-half minutes. An Al-Tambakti own goal just after the break completed a 4–0 win that sends Spain top of Group H and leaves Saudi Arabia bottom."},
+    39:{g:[],r:[{t:"BEL",p:"Nathan Ngoy",m:"66"}],s:"A goalless draw in Los Angeles left Group G wide open. Belgium were reduced to ten men when Nathan Ngoy was sent off in the 66th minute for hauling down Mehdi Taremi as the last man, and Iran had a first-half Taremi free-kick effort ruled out for offside by VAR. All four teams can still advance going into the final matchday."},
+    37:{g:[{t:"NZL",p:"Finn Surman",m:"16"},{t:"EGY",p:"Mostafa Zico",m:"58"},{t:"EGY",p:"Mohamed Salah",m:"67"},{t:"EGY",p:"Trézéguet",m:"82"}],r:[],s:"Finn Surman headed New Zealand into a deserved half-time lead, but Egypt roared back after the break. Mostafa Zico equalised, then set up Mohamed Salah before Trézéguet's diving header completed the comeback — Egypt's first World Cup win since their 1934 debut."},
+    38:{g:[{t:"CPV",p:"Kevin Pina",m:"21"},{t:"URU",p:"Maxi Araújo",m:"44"},{t:"URU",p:"Agustín Canobbio",m:"45+6"},{t:"CPV",p:"Hélio Varela",m:"61"}],r:[],s:"Kevin Pina's stunning long-range free-kick put Cape Verde ahead before Maxi Araújo and Agustín Canobbio struck either side of half-time to turn it around for Uruguay. Hélio Varela levelled just after the hour to earn the World Cup debutants a second remarkable draw."}
   };
 
   /* ============ helpers ============ */
