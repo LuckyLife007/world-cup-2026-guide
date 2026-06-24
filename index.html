@@ -302,10 +302,10 @@
       standings:[["ARG",6,"+5"],["AUT",3,"0"],["ALG",3,"−2"],["JOR",0,"−3"]] },
     { id:"K", name:"GROUP K", layout:["POR","COD","UZB","COL"],
       teams:{ POR:{n:"Portugal",c:"pt"}, COD:{n:"DR Congo",c:"cd"}, UZB:{n:"Uzbekistan",c:"uz"}, COL:{n:"Colombia",c:"co"} },
-      standings:[["POR",4,"+5"],["COL",3,"+2"],["COD",1,"0"],["UZB",0,"−7"]] },
+      standings:[["COL",6,"+3"],["POR",4,"+5"],["COD",1,"−1"],["UZB",0,"−7"]] },
     { id:"L", name:"GROUP L", layout:["ENG","CRO","GHA","PAN"],
       teams:{ ENG:{n:"England",c:"gb-eng"}, CRO:{n:"Croatia",c:"hr"}, GHA:{n:"Ghana",c:"gh"}, PAN:{n:"Panama",c:"pa"} },
-      standings:[["ENG",4,"+2"],["GHA",4,"+1"],["PAN",0,"−1"],["CRO",0,"−2"]] }
+      standings:[["ENG",4,"+2"],["GHA",4,"+1"],["CRO",3,"−1"],["PAN",0,"−2"]] }
   ];
 
   // global team registry (abbr -> {n, c}); abbrs are unique across all groups
@@ -389,14 +389,14 @@
     {stage:"group",grp:"K",h:"POR",a:"COD",s:"1–1",st:"played",  d:"2026-06-17",t:"12:00",tz:-5,host:"us",v:"NRG Stadium, Houston"},
     {stage:"group",grp:"K",h:"UZB",a:"COL",s:"1–3",st:"played",  d:"2026-06-17",t:"20:00",tz:-6,host:"mx",v:"Estadio Azteca, Mexico City"},
     {stage:"group",grp:"K",h:"POR",a:"UZB",s:"5–0",st:"played",  d:"2026-06-23",t:"12:00",tz:-5,host:"us",v:"NRG Stadium, Houston"},
-    {stage:"group",grp:"K",h:"COL",a:"COD",s:"vs", st:"upcoming",d:"2026-06-23",t:"20:00",tz:-6,host:"mx",v:"Estadio Akron, Guadalajara"},
+    {stage:"group",grp:"K",h:"COL",a:"COD",s:"1–0",st:"played",  d:"2026-06-23",t:"20:00",tz:-6,host:"mx",v:"Estadio Akron, Guadalajara"},
     {stage:"group",grp:"K",h:"COL",a:"POR",s:"vs", st:"upcoming",d:"2026-06-27",t:"19:30",tz:-4,host:"us",v:"Hard Rock Stadium, Miami"},
     {stage:"group",grp:"K",h:"COD",a:"UZB",s:"vs", st:"upcoming",d:"2026-06-27",t:"19:30",tz:-4,host:"us",v:"Mercedes-Benz Stadium, Atlanta"},
     // Group L
     {stage:"group",grp:"L",h:"ENG",a:"CRO",s:"4–2",st:"played",  d:"2026-06-17",t:"15:00",tz:-5,host:"us",v:"AT&T Stadium, Arlington"},
     {stage:"group",grp:"L",h:"GHA",a:"PAN",s:"1–0",st:"played",  d:"2026-06-17",t:"19:00",tz:-4,host:"ca",v:"BMO Field, Toronto"},
     {stage:"group",grp:"L",h:"ENG",a:"GHA",s:"0–0",st:"played",  d:"2026-06-23",t:"16:00",tz:-4,host:"us",v:"Gillette Stadium, Foxborough"},
-    {stage:"group",grp:"L",h:"PAN",a:"CRO",s:"vs", st:"upcoming",d:"2026-06-23",t:"19:00",tz:-4,host:"ca",v:"BMO Field, Toronto"},
+    {stage:"group",grp:"L",h:"PAN",a:"CRO",s:"0–1",st:"played",  d:"2026-06-23",t:"19:00",tz:-4,host:"ca",v:"BMO Field, Toronto"},
     {stage:"group",grp:"L",h:"PAN",a:"ENG",s:"vs", st:"upcoming",d:"2026-06-27",t:"17:00",tz:-4,host:"us",v:"MetLife Stadium, East Rutherford"},
     {stage:"group",grp:"L",h:"CRO",a:"GHA",s:"vs", st:"upcoming",d:"2026-06-27",t:"17:00",tz:-4,host:"us",v:"Lincoln Financial Field, Philadelphia"},
     // ===== Knockout stage (slots filled as groups finish) =====
@@ -501,7 +501,9 @@
     44:{g:[{t:"ARG",p:"Lionel Messi",m:"38"},{t:"ARG",p:"Lionel Messi",m:"90+5"}],r:[],s:"Messi scored either side of the match to take his World Cup tally to 18 — breaking Miroslav Klose's all-time men's record of 16 — as defending champions Argentina beat Austria to reach the knockouts."},
     43:{g:[{t:"JOR",p:"Nizar Al-Rashdan",m:"36"},{t:"ALG",p:"Nadhir Benbouali",m:"69"},{t:"ALG",p:"Amine Gouiri",m:"82"}],r:[],s:"World Cup debutants Jordan led through Al-Rashdan's fine finish, but substitute Benbouali headed in a Mahrez corner and Gouiri poked home a late winner to keep Algeria alive and eliminate Jordan."},
     48:{g:[{t:"POR",p:"Cristiano Ronaldo",m:"6"},{t:"POR",p:"Nuno Mendes",m:"17"},{t:"POR",p:"Cristiano Ronaldo",m:"39"},{t:"POR",p:"Abduvohid Nematov",m:"60",type:"og"},{t:"POR",p:"Rafael Leão",m:"87"}],r:[],s:"Cristiano Ronaldo's first-half brace made him the first player to score at six different World Cups as Portugal routed Uzbekistan in Houston. Nuno Mendes, an own goal and substitute Rafael Leão completed the rout."},
-    45:{g:[],r:[],s:"England were held to a goalless draw by a well-drilled Ghana but moved closer to the knockout phase. England struggled to break through, with O'Reilly hitting the crossbar and a stoppage-time Guéhi header cleared off the line."}
+    45:{g:[],r:[],s:"England were held to a goalless draw by a well-drilled Ghana but moved closer to the knockout phase. England struggled to break through, with O'Reilly hitting the crossbar and a stoppage-time Guéhi header cleared off the line."},
+    47:{g:[{t:"COL",p:"Daniel Muñoz",m:"76"}],r:[],s:"Daniel Muñoz headed home the only goal in the 76th minute to send Colombia into the knockout stage with a game to spare. DR Congo goalkeeper Lionel Mpasi kept the score down with eight saves, but Colombia's pressure finally told."},
+    46:{g:[{t:"CRO",p:"Ante Budimir",m:"54"}],r:[],s:"Substitute Ante Budimir prodded home Josip Stanišić's cross at the far post nine minutes after coming on to give Croatia a vital 1–0 win and revive their campaign. A second straight 1–0 defeat eliminates Panama."}
   };
 
   /* ============ helpers ============ */
