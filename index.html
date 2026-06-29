@@ -160,6 +160,8 @@
   .m-team img { width: 30px; height: 20px; object-fit: cover; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,.5); flex: none; }
   .m-score { font-size: 22px; font-weight: 800; color: #d4af37; white-space: nowrap; }
   .m-score.upc { font-size: 13px; color: #7d8aa0; font-weight: 700; }
+  .m-pen { display: block; font-size: 11.5px; color: #8a97ab; font-weight: 700; margin-top: 2px; }
+  .m-team.win { color: #f0c64a; font-weight: 800; }
   .m-meta { text-align: center; color: #9aa7bd; font-size: 11.5px; margin-top: 11px; line-height: 1.65; }
   .m-meta .hostflag { display: inline-block; vertical-align: middle; width: 15px; height: 11px; object-fit: cover; border-radius: 2px; margin-right: 5px; }
   .modal-body { padding: 16px 20px 20px; }
@@ -197,7 +199,16 @@
   .ko-box.ko-final { border-color: #d4af37; box-shadow: 0 0 16px rgba(212,175,55,.22); }
   .ko-box.ko-third { border-style: dashed; }
   .ko-meta { font-size: 8.5px; color: #6b7891; display: flex; justify-content: space-between; margin-bottom: 3px; }
-  .ko-slot { font-size: 11px; color: #cfd8e6; line-height: 1.55; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ko-slot { font-size: 11px; color: #cfd8e6; line-height: 1.5; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .ko-name { display: flex; align-items: center; gap: 5px; min-width: 0; overflow: hidden; }
+  .ko-flag { width: 16px; height: 11px; object-fit: cover; border-radius: 2px; flex: none; box-shadow: 0 1px 2px rgba(0,0,0,.5); }
+  .ko-ab { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ko-slot.tbd .ko-ab { color: #93a0b6; font-size: 10.5px; }
+  .ko-slot.win .ko-ab { color: #f0c64a; font-weight: 800; }
+  .ko-gf { flex: none; font-size: 12px; font-weight: 800; color: #aeb9c9; }
+  .ko-slot.win .ko-gf { color: #f0c64a; }
+  .ko-box.played { background: #161f2e; border-color: #3a4a6a; }
+  .ko-box.played::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #d4af37; border-radius: 8px 0 0 8px; }
   svg.ko-lines { position: absolute; top: 0; left: 0; z-index: 1; }
 
   #tip {
@@ -213,6 +224,8 @@
   #tip .t-row { display: flex; gap: 7px; font-size: 11.5px; color: #c4cedd; margin-top: 5px; align-items: flex-start; line-height: 1.35; }
   #tip .t-row .ic { width: 16px; text-align: center; flex: none; }
   #tip .hostflag { width: 15px; height: 11px; object-fit: cover; border-radius: 2px; display: block; margin-top: 1px; box-shadow: 0 1px 2px rgba(0,0,0,.5); }
+  #tip .t-flag { width: 18px; height: 12px; object-fit: cover; border-radius: 2px; vertical-align: middle; margin-right: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.5); }
+  #tip .t-head .nm { vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -299,13 +312,13 @@
       standings:[["FRA",9,"+8"],["NOR",6,"+1"],["SEN",3,"+2"],["IRQ",0,"−11"]] },
     { id:"J", name:"GROUP J", layout:["ARG","ALG","AUT","JOR"],
       teams:{ ARG:{n:"Argentina",c:"ar"}, ALG:{n:"Algeria",c:"dz"}, AUT:{n:"Austria",c:"at"}, JOR:{n:"Jordan",c:"jo"} },
-      standings:[["ARG",6,"+5"],["AUT",3,"0"],["ALG",3,"−2"],["JOR",0,"−3"]] },
+      standings:[["ARG",9,"+7"],["AUT",4,"0"],["ALG",4,"−2"],["JOR",0,"−5"]] },
     { id:"K", name:"GROUP K", layout:["POR","COD","UZB","COL"],
       teams:{ POR:{n:"Portugal",c:"pt"}, COD:{n:"DR Congo",c:"cd"}, UZB:{n:"Uzbekistan",c:"uz"}, COL:{n:"Colombia",c:"co"} },
-      standings:[["COL",6,"+3"],["POR",4,"+5"],["COD",1,"−1"],["UZB",0,"−7"]] },
+      standings:[["COL",7,"+3"],["POR",5,"+5"],["COD",4,"+1"],["UZB",0,"−9"]] },
     { id:"L", name:"GROUP L", layout:["ENG","CRO","GHA","PAN"],
       teams:{ ENG:{n:"England",c:"gb-eng"}, CRO:{n:"Croatia",c:"hr"}, GHA:{n:"Ghana",c:"gh"}, PAN:{n:"Panama",c:"pa"} },
-      standings:[["ENG",4,"+2"],["GHA",4,"+1"],["CRO",3,"−1"],["PAN",0,"−2"]] }
+      standings:[["ENG",7,"+4"],["CRO",6,"0"],["GHA",4,"0"],["PAN",0,"−4"]] }
   ];
 
   // global team registry (abbr -> {n, c}); abbrs are unique across all groups
@@ -383,38 +396,38 @@
     {stage:"group",grp:"J",h:"AUT",a:"JOR",s:"3–1",st:"played",  d:"2026-06-16",t:"21:00",tz:-7,host:"us",v:"Levi's Stadium, Santa Clara"},
     {stage:"group",grp:"J",h:"ARG",a:"AUT",s:"2–0",st:"played",  d:"2026-06-22",t:"12:00",tz:-5,host:"us",v:"AT&T Stadium, Arlington"},
     {stage:"group",grp:"J",h:"JOR",a:"ALG",s:"1–2",st:"played",  d:"2026-06-22",t:"20:00",tz:-7,host:"us",v:"Levi's Stadium, Santa Clara"},
-    {stage:"group",grp:"J",h:"ALG",a:"AUT",s:"vs", st:"upcoming",d:"2026-06-27",t:"21:00",tz:-5,host:"us",v:"Arrowhead Stadium, Kansas City"},
-    {stage:"group",grp:"J",h:"JOR",a:"ARG",s:"vs", st:"upcoming",d:"2026-06-27",t:"21:00",tz:-5,host:"us",v:"AT&T Stadium, Arlington"},
+    {stage:"group",grp:"J",h:"ALG",a:"AUT",s:"3–3", st:"played",d:"2026-06-27",t:"21:00",tz:-5,host:"us",v:"Arrowhead Stadium, Kansas City"},
+    {stage:"group",grp:"J",h:"JOR",a:"ARG",s:"1–3", st:"played",d:"2026-06-27",t:"21:00",tz:-5,host:"us",v:"AT&T Stadium, Arlington"},
     // Group K
     {stage:"group",grp:"K",h:"POR",a:"COD",s:"1–1",st:"played",  d:"2026-06-17",t:"12:00",tz:-5,host:"us",v:"NRG Stadium, Houston"},
     {stage:"group",grp:"K",h:"UZB",a:"COL",s:"1–3",st:"played",  d:"2026-06-17",t:"20:00",tz:-6,host:"mx",v:"Estadio Azteca, Mexico City"},
     {stage:"group",grp:"K",h:"POR",a:"UZB",s:"5–0",st:"played",  d:"2026-06-23",t:"12:00",tz:-5,host:"us",v:"NRG Stadium, Houston"},
     {stage:"group",grp:"K",h:"COL",a:"COD",s:"1–0",st:"played",  d:"2026-06-23",t:"20:00",tz:-6,host:"mx",v:"Estadio Akron, Guadalajara"},
-    {stage:"group",grp:"K",h:"COL",a:"POR",s:"vs", st:"upcoming",d:"2026-06-27",t:"19:30",tz:-4,host:"us",v:"Hard Rock Stadium, Miami"},
-    {stage:"group",grp:"K",h:"COD",a:"UZB",s:"vs", st:"upcoming",d:"2026-06-27",t:"19:30",tz:-4,host:"us",v:"Mercedes-Benz Stadium, Atlanta"},
+    {stage:"group",grp:"K",h:"COL",a:"POR",s:"0–0", st:"played",d:"2026-06-27",t:"19:30",tz:-4,host:"us",v:"Hard Rock Stadium, Miami"},
+    {stage:"group",grp:"K",h:"COD",a:"UZB",s:"3–1", st:"played",d:"2026-06-27",t:"19:30",tz:-4,host:"us",v:"Mercedes-Benz Stadium, Atlanta"},
     // Group L
     {stage:"group",grp:"L",h:"ENG",a:"CRO",s:"4–2",st:"played",  d:"2026-06-17",t:"15:00",tz:-5,host:"us",v:"AT&T Stadium, Arlington"},
     {stage:"group",grp:"L",h:"GHA",a:"PAN",s:"1–0",st:"played",  d:"2026-06-17",t:"19:00",tz:-4,host:"ca",v:"BMO Field, Toronto"},
     {stage:"group",grp:"L",h:"ENG",a:"GHA",s:"0–0",st:"played",  d:"2026-06-23",t:"16:00",tz:-4,host:"us",v:"Gillette Stadium, Foxborough"},
     {stage:"group",grp:"L",h:"PAN",a:"CRO",s:"0–1",st:"played",  d:"2026-06-23",t:"19:00",tz:-4,host:"ca",v:"BMO Field, Toronto"},
-    {stage:"group",grp:"L",h:"PAN",a:"ENG",s:"vs", st:"upcoming",d:"2026-06-27",t:"17:00",tz:-4,host:"us",v:"MetLife Stadium, East Rutherford"},
-    {stage:"group",grp:"L",h:"CRO",a:"GHA",s:"vs", st:"upcoming",d:"2026-06-27",t:"17:00",tz:-4,host:"us",v:"Lincoln Financial Field, Philadelphia"},
+    {stage:"group",grp:"L",h:"PAN",a:"ENG",s:"0–2", st:"played",d:"2026-06-27",t:"17:00",tz:-4,host:"us",v:"MetLife Stadium, East Rutherford"},
+    {stage:"group",grp:"L",h:"CRO",a:"GHA",s:"2–1", st:"played",d:"2026-06-27",t:"17:00",tz:-4,host:"us",v:"Lincoln Financial Field, Philadelphia"},
     // ===== Knockout stage (slots filled as groups finish) =====
-    {stage:"R32",no:73,s1:"RSA",s2:"CAN",  st:"upcoming",s:"vs",d:"2026-06-28",t:"12:00",tz:-7,host:"us",v:"SoFi Stadium, Inglewood"},
-    {stage:"R32",no:74,s1:"GER",   s2:"3rd Group A/B/C/D/F", st:"upcoming",s:"vs",d:"2026-06-29",t:"16:30",tz:-4,host:"us",v:"Gillette Stadium, Foxborough"},
+    {stage:"R32",no:73,s1:"RSA",s2:"CAN",  st:"played",s:"0–1",d:"2026-06-28",t:"12:00",tz:-7,host:"us",v:"SoFi Stadium, Inglewood"},
+    {stage:"R32",no:74,s1:"GER",   s2:"PAR", st:"upcoming",s:"vs",d:"2026-06-29",t:"16:30",tz:-4,host:"us",v:"Gillette Stadium, Foxborough"},
     {stage:"R32",no:75,s1:"NED",   s2:"MAR",   st:"upcoming",s:"vs",d:"2026-06-29",t:"19:00",tz:-6,host:"mx",v:"Estadio BBVA, Guadalupe"},
     {stage:"R32",no:76,s1:"BRA",   s2:"JPN",   st:"upcoming",s:"vs",d:"2026-06-29",t:"12:00",tz:-5,host:"us",v:"NRG Stadium, Houston"},
-    {stage:"R32",no:77,s1:"FRA",   s2:"3rd Group C/D/F/G/H", st:"upcoming",s:"vs",d:"2026-06-30",t:"17:00",tz:-4,host:"us",v:"MetLife Stadium, East Rutherford"},
+    {stage:"R32",no:77,s1:"FRA",   s2:"SWE", st:"upcoming",s:"vs",d:"2026-06-30",t:"17:00",tz:-4,host:"us",v:"MetLife Stadium, East Rutherford"},
     {stage:"R32",no:78,s1:"CIV",s2:"NOR",   st:"upcoming",s:"vs",d:"2026-06-30",t:"12:00",tz:-5,host:"us",v:"AT&T Stadium, Arlington"},
-    {stage:"R32",no:79,s1:"MEX",   s2:"3rd Group C/E/F/H/I", st:"upcoming",s:"vs",d:"2026-06-30",t:"19:00",tz:-6,host:"mx",v:"Estadio Azteca, Mexico City"},
-    {stage:"R32",no:80,s1:"Winner Group L",   s2:"3rd Group E/H/I/J/K", st:"upcoming",s:"vs",d:"2026-07-01",t:"12:00",tz:-4,host:"us",v:"Mercedes-Benz Stadium, Atlanta"},
-    {stage:"R32",no:81,s1:"USA",   s2:"3rd Group B/E/F/I/J", st:"upcoming",s:"vs",d:"2026-07-01",t:"17:00",tz:-7,host:"us",v:"Levi's Stadium, Santa Clara"},
-    {stage:"R32",no:82,s1:"BEL",   s2:"3rd Group A/E/H/I/J", st:"upcoming",s:"vs",d:"2026-07-01",t:"13:00",tz:-7,host:"us",v:"Lumen Field, Seattle"},
-    {stage:"R32",no:83,s1:"Runner-up Group K",s2:"Runner-up Group L",   st:"upcoming",s:"vs",d:"2026-07-02",t:"19:00",tz:-4,host:"ca",v:"BMO Field, Toronto"},
-    {stage:"R32",no:84,s1:"ESP",   s2:"Runner-up Group J",   st:"upcoming",s:"vs",d:"2026-07-02",t:"12:00",tz:-7,host:"us",v:"SoFi Stadium, Inglewood"},
-    {stage:"R32",no:85,s1:"SUI",   s2:"3rd Group E/F/G/I/J", st:"upcoming",s:"vs",d:"2026-07-02",t:"20:00",tz:-7,host:"ca",v:"BC Place, Vancouver"},
-    {stage:"R32",no:86,s1:"Winner Group J",   s2:"CPV",   st:"upcoming",s:"vs",d:"2026-07-03",t:"18:00",tz:-4,host:"us",v:"Hard Rock Stadium, Miami"},
-    {stage:"R32",no:87,s1:"Winner Group K",   s2:"3rd Group D/E/I/J/L", st:"upcoming",s:"vs",d:"2026-07-03",t:"20:30",tz:-5,host:"us",v:"Arrowhead Stadium, Kansas City"},
+    {stage:"R32",no:79,s1:"MEX",   s2:"ECU", st:"upcoming",s:"vs",d:"2026-06-30",t:"19:00",tz:-6,host:"mx",v:"Estadio Azteca, Mexico City"},
+    {stage:"R32",no:80,s1:"ENG",   s2:"COD", st:"upcoming",s:"vs",d:"2026-07-01",t:"12:00",tz:-4,host:"us",v:"Mercedes-Benz Stadium, Atlanta"},
+    {stage:"R32",no:81,s1:"USA",   s2:"BIH", st:"upcoming",s:"vs",d:"2026-07-01",t:"17:00",tz:-7,host:"us",v:"Levi's Stadium, Santa Clara"},
+    {stage:"R32",no:82,s1:"BEL",   s2:"SEN", st:"upcoming",s:"vs",d:"2026-07-01",t:"13:00",tz:-7,host:"us",v:"Lumen Field, Seattle"},
+    {stage:"R32",no:83,s1:"POR",s2:"CRO",   st:"upcoming",s:"vs",d:"2026-07-02",t:"19:00",tz:-4,host:"ca",v:"BMO Field, Toronto"},
+    {stage:"R32",no:84,s1:"ESP",   s2:"AUT",   st:"upcoming",s:"vs",d:"2026-07-02",t:"12:00",tz:-7,host:"us",v:"SoFi Stadium, Inglewood"},
+    {stage:"R32",no:85,s1:"SUI",   s2:"ALG", st:"upcoming",s:"vs",d:"2026-07-02",t:"20:00",tz:-7,host:"ca",v:"BC Place, Vancouver"},
+    {stage:"R32",no:86,s1:"ARG",   s2:"CPV",   st:"upcoming",s:"vs",d:"2026-07-03",t:"18:00",tz:-4,host:"us",v:"Hard Rock Stadium, Miami"},
+    {stage:"R32",no:87,s1:"COL",   s2:"GHA", st:"upcoming",s:"vs",d:"2026-07-03",t:"20:30",tz:-5,host:"us",v:"Arrowhead Stadium, Kansas City"},
     {stage:"R32",no:88,s1:"AUS",s2:"EGY",   st:"upcoming",s:"vs",d:"2026-07-03",t:"13:00",tz:-5,host:"us",v:"AT&T Stadium, Arlington"},
     {stage:"R16",no:89,s1:"Winner Match 74",s2:"Winner Match 77",st:"upcoming",s:"vs",d:"2026-07-04",t:"17:00",tz:-4,host:"us",v:"Lincoln Financial Field, Philadelphia"},
     {stage:"R16",no:90,s1:"Winner Match 73",s2:"Winner Match 75",st:"upcoming",s:"vs",d:"2026-07-04",t:"12:00",tz:-5,host:"us",v:"NRG Stadium, Houston"},
@@ -521,7 +534,14 @@
     63:{g:[{t:"ESP",p:"Álex Baena",m:"42"}],r:[{t:"URU",p:"Agustín Canobbio",m:"90+4"}],s:"Álex Baena's first-time strike just before half-time squirmed through Fernando Muslera to win it for Spain, who top Group H. Uruguay had Agustín Canobbio sent off in stoppage time for a studs-up lunge and contact with the referee, and went out on goal difference."},
     64:{g:[],r:[],s:"A goalless draw saw World Cup debutants Cape Verde reach the knockout stage as Group H runners-up after three draws, setting up a last-32 tie with Argentina. Saudi Arabia finished bottom and were eliminated."},
     65:{g:[{t:"EGY",p:"Mahmoud Saber",m:"5"},{t:"IRN",p:"Ramin Rezaeian",m:"14"}],r:[],s:"Mahmoud Saber fired Egypt ahead inside five minutes, set up by Mohamed Salah, but Ramin Rezaeian levelled for Iran on 14 minutes. Iran thought they had won it deep in stoppage time through Shoja Khalilzadeh, but VAR ruled it out for offside. Egypt advance second in Group G; Iran finish third and await the third-place rankings."},
-    66:{g:[{t:"BEL",p:"Leandro Trossard",m:"28"},{t:"BEL",p:"Leandro Trossard",m:"50"},{t:"BEL",p:"Kevin De Bruyne",m:"66"},{t:"NZL",p:"Elijah Just",m:"84"},{t:"BEL",p:"Romelu Lukaku",m:"86"},{t:"BEL",p:"Alexis Saelemaekers",m:"90+4"}],r:[],s:"Leandro Trossard scored in each half and Kevin De Bruyne curled in from outside the box as Belgium came good to win Group G. Elijah Just grabbed a consolation for New Zealand before Romelu Lukaku and Alexis Saelemaekers completed the 5–1 rout."}
+    66:{g:[{t:"BEL",p:"Leandro Trossard",m:"28"},{t:"BEL",p:"Leandro Trossard",m:"50"},{t:"BEL",p:"Kevin De Bruyne",m:"66"},{t:"NZL",p:"Elijah Just",m:"84"},{t:"BEL",p:"Romelu Lukaku",m:"86"},{t:"BEL",p:"Alexis Saelemaekers",m:"90+4"}],r:[],s:"Leandro Trossard scored in each half and Kevin De Bruyne curled in from outside the box as Belgium came good to win Group G. Elijah Just grabbed a consolation for New Zealand before Romelu Lukaku and Alexis Saelemaekers completed the 5–1 rout."},
+    67:{g:[{t:"ENG",p:"Jude Bellingham",m:"62"},{t:"ENG",p:"Harry Kane",m:"67"}],r:[],s:"Jude Bellingham poked in a Bukayo Saka corner before Harry Kane headed home Bellingham's cross to become England's all-time leading World Cup scorer with his 11th goal at the finals, one ahead of Gary Lineker. England top Group L."},
+    68:{g:[{t:"CRO",p:"Petar Sučić",m:"31"},{t:"GHA",p:"Derrick Luckassen",m:"73"},{t:"CRO",p:"Nikola Vlašić",m:"83"}],r:[],s:"Petar Sučić curled in a fine first-half opener for Croatia before Derrick Luckassen levelled from an Ernest Nuamah free-kick. Nikola Vlašić headed home a Luka Modrić corner on 83 minutes to win it and send Croatia through as Group L runners-up. Ghana finished third and qualified as one of the best third-placed teams."},
+    69:{g:[],r:[],s:"A goalless draw in Miami sent Colombia top of Group K and Portugal through as runners-up. Colombia had much the better of it, with 24 attempts to Portugal's 13, but neither side could find a breakthrough."},
+    70:{g:[{t:"UZB",p:"Eldor Shomurodov",m:"10"},{t:"COD",p:"Yoane Wissa",m:"68",type:"pen"},{t:"COD",p:"Fiston Mayele",m:"78"},{t:"COD",p:"Yoane Wissa",m:"90+1"}],r:[],s:"Eldor Shomurodov put Uzbekistan ahead early, but DR Congo hit back through a Yoane Wissa penalty, a Fiston Mayele strike and a late second from Wissa to finish third in Group K and qualify as one of the best third-placed teams. Uzbekistan were eliminated."},
+    71:{g:[{t:"AUT",p:"Marko Arnautović",m:"28"},{t:"ALG",p:"Rafik Belghali",m:"44"},{t:"AUT",p:"Marcel Sabitzer",m:"55"},{t:"ALG",p:"Riyad Mahrez",m:"60"},{t:"ALG",p:"Riyad Mahrez",m:"90+3"},{t:"AUT",p:"Saša Kalajdžić",m:"90+6"}],r:[],s:"In a match both teams needed only to draw, Saša Kalajdžić's 96th-minute header rescued a 3–3 thriller. Riyad Mahrez's brace, including a stoppage-time strike, had looked to win it for Algeria after Arnautović and Sabitzer twice put Austria ahead. The draw sends Austria through as Group J runners-up and Algeria as one of the best third-placed teams, eliminating Iran."},
+    72:{g:[{t:"ARG",p:"Giovani Lo Celso",m:"19"},{t:"ARG",p:"Lautaro Martínez",m:"31",type:"pen"},{t:"JOR",p:"Musa Al-Tamari",m:"55"},{t:"ARG",p:"Lionel Messi",m:"80"}],r:[],s:"With Argentina already through as group winners, Giovani Lo Celso and a Lautaro Martínez penalty had La Albiceleste cruising before Musa Al-Tamari pulled one back. Lionel Messi came off the bench and scored to cap a 3–1 win, closing the group with a perfect nine points. Jordan finished bottom on their World Cup debut."},
+    73:{g:[{t:"CAN",p:"Stephen Eustáquio",m:"90+2"}],r:[],s:"Stephen Eustáquio volleyed home in the second minute of stoppage time to send Canada past South Africa and into the Round of 16 for the first time in their history. Alphonso Davies made his tournament debut off the bench after a group-stage hamstring injury."}
   };
 
   /* ============ helpers ============ */
@@ -536,6 +556,37 @@
     return s.replace(/^Winner Group /,"Winner ").replace(/^Runner-up Group /,"Runner-up ")
             .replace(/^3rd Group /,"3rd ").replace(/^Winner Match /,"Winner M").replace(/^Loser Match /,"Loser M");
   }
+
+  /* ====== knockout slot resolution: fills "Winner/Loser Match N" as results come in ====== */
+  // A slot is a real team abbr, "Winner Match N", or "Loser Match N". Resolve as far as results allow.
+  function koScoreParts(m) {                 // [homeGoals, awayGoals] for a played match, else null
+    if (!m || m.st !== "played" || !m.s) return null;
+    const p = m.s.split("–");
+    if (p.length !== 2) return null;
+    const h = parseInt(p[0], 10), a = parseInt(p[1], 10);
+    return (isNaN(h) || isNaN(a)) ? null : [h, a];
+  }
+  function slotTeam(s) { const i = slotInfo(s); return i.kind === "team" ? i.abbr : null; }
+  function koResult(m) {                      // {win, lose} abbrs for a played knockout match, else null
+    if (!m || m.stage === "group" || m.st !== "played") return null;
+    const home = slotTeam(m.s1), away = slotTeam(m.s2);
+    if (m.w) return { win: m.w, lose: m.w === home ? away : (m.w === away ? home : null) };  // explicit (penalties/draws)
+    const sc = koScoreParts(m);
+    if (sc && home && away && sc[0] !== sc[1]) return sc[0] > sc[1] ? { win: home, lose: away } : { win: away, lose: home };
+    return null;
+  }
+  function slotInfo(s) {                      // {kind:"team",abbr} | {kind:"pair",a,b,want} | {kind:"placeholder",text}
+    if (TEAM[s]) return { kind: "team", abbr: s };
+    const mm = /^(Winner|Loser) Match (\d+)$/.exec(s);
+    if (mm) {
+      const want = mm[1], fm = MByNo[+mm[2]], res = koResult(fm);
+      if (res) { const ab = want === "Winner" ? res.win : res.lose; if (ab) return { kind: "team", abbr: ab }; }
+      if (fm) { const a = slotTeam(fm.s1), b = slotTeam(fm.s2); if (a && b) return { kind: "pair", a, b, want }; }  // both feeders known
+    }
+    return { kind: "placeholder", text: koSlot(s) };
+  }
+  const slotName = (s, full) => { const i = slotInfo(s); return i.kind === "team" ? (full ? TEAM[i.abbr].n : i.abbr) : (i.kind === "pair" ? i.a + "/" + i.b : i.text); };
+  const slotFlag = s => { const i = slotInfo(s); return i.kind === "team" ? FLAG(TEAM[i.abbr].c) : ""; };
   const fmt12 = mins => {
     let h = Math.floor(mins/60), m = mins%60, ap = h<12 ? "AM" : "PM", hh = h%12 || 12;
     return hh + ":" + String(m).padStart(2,"0") + " " + ap;
@@ -669,9 +720,13 @@
       awayHtml = `<span class="fx-team away"><img src="${FLAG(away.c)}"><span class="nm">${away.n}</span></span>`;
       score = m.st === "played" ? m.s : "vs"; dh = home.n; da = away.n;
     } else {
-      homeHtml = `<span class="fx-team home ko"><span class="nm">${koSlot(m.s1)}</span></span>`;
-      awayHtml = `<span class="fx-team away ko"><span class="nm">${koSlot(m.s2)}</span></span>`;
-      score = "vs"; dh = m.s1; da = m.s2;
+      const i1 = slotInfo(m.s1), i2 = slotInfo(m.s2);
+      const n1 = slotName(m.s1, true), n2 = slotName(m.s2, true);
+      const f1 = i1.kind === "team" ? `<img src="${FLAG(TEAM[i1.abbr].c)}">` : "";
+      const f2 = i2.kind === "team" ? `<img src="${FLAG(TEAM[i2.abbr].c)}">` : "";
+      homeHtml = `<span class="fx-team home ${i1.kind!=='team'?'ko':''}"><span class="nm">${n1}</span>${f1}</span>`;
+      awayHtml = `<span class="fx-team away ${i2.kind!=='team'?'ko':''}">${f2}<span class="nm">${n2}</span></span>`;
+      score = m.st === "played" ? m.s : "vs"; dh = n1; da = n2;
     }
     return `<div class="fx-card ${m.st}" id="m${m.no}" data-no="${m.no}"
       data-home="${dh}" data-away="${da}" data-score="${m.st==='played'?m.s:'Upcoming'}" data-status="${m.st}"
@@ -720,7 +775,7 @@
 
   function renderKnockout() {
     const KO = MATCHES.filter(m => m.stage !== "group");
-    const boxW = 158, boxH = 54, colW = 212, rowH = 72, topPad = 50, leftPad = 14;
+    const boxW = 158, boxH = 56, colW = 212, rowH = 72, topPad = 50, leftPad = 14;
     const colX = c => leftPad + c*colW;
     const r32order = [74,77,73,75,83,84,81,82,76,78,79,80,86,88,85,87];
     const y = {};
@@ -731,11 +786,15 @@
     y[103] = y[104] + 122;
     const W = colX(4) + boxW + leftPad, H = topPad + 16*rowH + 28;
 
+    const GREY = "#3a4a6a", GOLD = "#d4af37";
+    const seg = (d, on) => `<path d="${d}" stroke="${on ? GOLD : GREY}" stroke-width="${on ? 2.5 : 1.5}" fill="none" stroke-linecap="round"/>`;
     let lines = "";
     ["R16","QF","SF","FINAL"].forEach(rd => KO.filter(m => m.stage === rd).forEach(m => {
       const col = ROUND_COL[rd], [f1,f2] = feeders(m);
       const xfR = colX(col-1) + boxW, xc = colX(col), midX = xfR + (xc-xfR)/2;
-      lines += `<path d="M${xfR} ${y[f1]} H${midX} M${xfR} ${y[f2]} H${midX} M${midX} ${y[f1]} V${y[f2]} M${midX} ${y[m.no]} H${xc}" stroke="#3a4a6a" stroke-width="1.5" fill="none"/>`;
+      const p1 = MByNo[f1] && MByNo[f1].st === "played", p2 = MByNo[f2] && MByNo[f2].st === "played", pm = m.st === "played";
+      lines += seg(`M${xfR} ${y[f1]} H${midX}`, p1) + seg(`M${xfR} ${y[f2]} H${midX}`, p2)
+             + seg(`M${midX} ${y[f1]} V${y[f2]}`, pm) + seg(`M${midX} ${y[m.no]} H${xc}`, pm);
     }));
 
     let heads = "";
@@ -743,19 +802,27 @@
 
     let boxes = "";
     KO.forEach(m => {
-      const col = ROUND_COL[m.stage];
-      boxes += `<div class="ko-box ${m.stage==='FINAL'?'ko-final':''} ${m.stage==='3RD'?'ko-third':''}"
+      const col = ROUND_COL[m.stage], res = koResult(m), sc = koScoreParts(m);
+      const slot = (s, gi) => {
+        const info = slotInfo(s);
+        const flag = info.kind === "team" ? `<img class="ko-flag" src="${FLAG(TEAM[info.abbr].c)}" alt="">` : "";
+        const label = info.kind === "team" ? info.abbr : (info.kind === "pair" ? info.a + "/" + info.b : info.text);
+        const win = res && info.kind === "team" && info.abbr === res.win;
+        const gf = (m.st === "played" && sc) ? `<span class="ko-gf">${sc[gi]}</span>` : "";
+        return `<div class="ko-slot ${win ? "win" : ""} ${info.kind !== "team" ? "tbd" : ""}"><span class="ko-name">${flag}<span class="ko-ab">${label}</span></span>${gf}</div>`;
+      };
+      boxes += `<div class="ko-box ${m.stage==='FINAL'?'ko-final':''} ${m.stage==='3RD'?'ko-third':''} ${m.st==='played'?'played':''}"
         style="left:${colX(col)}px;top:${y[m.no]-boxH/2}px;width:${boxW}px;height:${boxH}px;" data-no="${m.no}"
-        data-home="${m.s1}" data-away="${m.s2}" data-status="upcoming" data-score="Upcoming"
+        data-home="${slotName(m.s1,true)}" data-away="${slotName(m.s2,true)}" data-homeflag="${slotFlag(m.s1)}" data-awayflag="${slotFlag(m.s2)}"
+        data-status="${m.st}" data-score="${m.st==='played'?m.s:'Upcoming'}"
         data-date="${dateLabel(m.d)}" data-t="${m.t}" data-tz="${m.tz}" data-host="${m.host}" data-venue="${m.v}">
         <div class="ko-meta"><span>M${m.no} · ${ROUND_SHORT[m.stage]}</span><span>${shortMD(m.d)}</span></div>
-        <div class="ko-slot">${koSlot(m.s1)}</div>
-        <div class="ko-slot">${koSlot(m.s2)}</div>
+        ${slot(m.s1,0)}${slot(m.s2,1)}
       </div>`;
     });
 
     document.getElementById("panel-knockout").innerHTML =
-      `<p class="hint">Hover any match for details · slots fill in as groups finish</p>
+      `<p class="hint">Hover any match for details · winners advance automatically as results come in</p>
        <div class="bracket-wrap"><div class="bracket" style="width:${W}px;height:${H}px;">
          <svg class="ko-lines" width="${W}" height="${H}">${lines}</svg>${heads}${boxes}
        </div></div>`;
@@ -778,8 +845,9 @@
         elVenue=document.getElementById("tipVenue"), elHost=document.getElementById("tipHostFlag");
 
   function showTip(e) {
-    const chip = e.currentTarget, d = chip.dataset, upc = d.status === "upcoming";
-    elTeams.textContent = d.home + " – " + d.away;
+    const chip = e.currentTarget, d = chip.dataset, upc = d.status !== "played";
+    const fl = u => u ? `<img class="t-flag" src="${u}" alt="">` : "";
+    elTeams.innerHTML = `${fl(d.homeflag)}<span class="nm">${d.home}</span> <span class="nm">–</span> ${fl(d.awayflag)}<span class="nm">${d.away}</span>`;
     elScore.textContent = upc ? "Upcoming" : d.score;
     elDate.textContent = d.date;
     elTime.textContent = timeStr(d.t, Number(d.tz));
@@ -818,20 +886,26 @@
     const isGroup = m.stage === "group";
     const { local, wat, day } = watParts(m.t, m.tz);
     const timeLine = `${fmt12(local)} (local) &nbsp;|&nbsp; ${fmt12(wat)}${day>0?" +"+day:""} (WAT)`;
-    let homeName, awayName, homeImg = "", awayImg = "", scoreHtml;
+    let homeName, awayName, homeImg = "", awayImg = "", scoreHtml, homeAbbr = null, awayAbbr = null, hWin = false, aWin = false;
     if (isGroup) {
       const h = TEAM[m.h], a = TEAM[m.a];
-      homeName = h.n; awayName = a.n;
+      homeName = h.n; awayName = a.n; homeAbbr = m.h; awayAbbr = m.a;
       homeImg = `<img src="${FLAG(h.c)}">`; awayImg = `<img src="${FLAG(a.c)}">`;
       scoreHtml = m.st === "played" ? `<span class="m-score">${m.s}</span>` : `<span class="m-score upc">vs</span>`;
     } else {
-      homeName = koSlot(m.s1); awayName = koSlot(m.s2);
-      scoreHtml = `<span class="m-score upc">vs</span>`;
+      const i1 = slotInfo(m.s1), i2 = slotInfo(m.s2), res = koResult(m);
+      homeName = slotName(m.s1, true); awayName = slotName(m.s2, true);
+      if (i1.kind === "team") { homeAbbr = i1.abbr; homeImg = `<img src="${FLAG(TEAM[i1.abbr].c)}">`; }
+      if (i2.kind === "team") { awayAbbr = i2.abbr; awayImg = `<img src="${FLAG(TEAM[i2.abbr].c)}">`; }
+      hWin = !!(res && homeAbbr && res.win === homeAbbr);
+      aWin = !!(res && awayAbbr && res.win === awayAbbr);
+      const penTxt = m.pen ? `<span class="m-pen">penalties ${m.pen}</span>` : "";
+      scoreHtml = m.st === "played" ? `<span class="m-score">${m.s}${penTxt}</span>` : `<span class="m-score upc">vs</span>`;
     }
     const det = MATCHDETAIL[no];
     let body = "";
     if (m.st === "played" && det) {
-      if (det.g.length) body += `<div class="m-sec"><div class="m-sec-h">⚽ Goals</div><div class="m-goals"><div class="col home">${goalsCol(det,m.h)}</div><div class="col away">${goalsCol(det,m.a)}</div></div></div>`;
+      if (det.g.length) body += `<div class="m-sec"><div class="m-sec-h">⚽ Goals</div><div class="m-goals"><div class="col home">${goalsCol(det,homeAbbr)}</div><div class="col away">${goalsCol(det,awayAbbr)}</div></div></div>`;
       if (det.r.length) body += `<div class="m-sec"><div class="m-sec-h">🟥 Red cards</div>` + det.r.map(x => `<div class="m-goal">${x.p} <span class="min">${x.m}'</span> <span class="tag">${x.t}</span></div>`).join("") + `</div>`;
       if (det.s) body += `<div class="m-sec"><div class="m-sec-h">Summary</div><div class="m-summary">${det.s}</div></div>`;
       const q = encodeURIComponent(`${homeName} vs ${awayName} 2026 World Cup highlights`);
@@ -843,9 +917,9 @@
       <button class="modal-close" aria-label="Close">×</button>
       <div class="modal-head">
         <div class="m-teams">
-          <span class="m-team h">${homeName} ${homeImg}</span>
+          <span class="m-team h ${hWin?'win':''}">${homeName} ${homeImg}</span>
           ${scoreHtml}
-          <span class="m-team a">${awayImg} ${awayName}</span>
+          <span class="m-team a ${aWin?'win':''}">${awayImg} ${awayName}</span>
         </div>
         <div class="m-meta">M${m.no} · ${isGroup ? ("Group " + m.grp) : ROUND_LABEL[m.stage]} · ${dateLabel(m.d)}<br>${timeLine}<br><img class="hostflag" src="${FLAG(m.host)}">${m.v}</div>
       </div>
