@@ -210,6 +210,20 @@
   .ko-box.played { background: #161f2e; border-color: #3a4a6a; }
   .ko-box.played::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #d4af37; border-radius: 8px 0 0 8px; }
   svg.ko-lines { position: absolute; top: 0; left: 0; z-index: 1; }
+  .ko-desktop { display: block; }
+  .ko-mobile { display: none; }
+  .kl-round { margin-bottom: 16px; }
+  .kl-rh { font-size: 12px; font-weight: 800; color: #9aa7bd; letter-spacing: .5px; margin: 0 0 8px 2px; }
+  .kl-card { position: relative; background: #151c28; border: 1px solid #2c3850; border-radius: 8px; padding: 7px 12px; margin-bottom: 8px; cursor: pointer; }
+  .kl-card.played { background: #161f2e; border-color: #3a4a6a; }
+  .kl-card.played::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #d4af37; border-radius: 8px 0 0 8px; }
+  .kl-card .ko-meta { font-size: 10px; }
+  .kl-card .ko-slot { font-size: 14px; }
+  .kl-card .ko-flag { width: 20px; height: 14px; }
+  @media (max-width: 680px) {
+    .ko-desktop { display: none; }
+    .ko-mobile { display: block; }
+  }
 
   #tip {
     position: fixed; z-index: 50; pointer-events: none; opacity: 0; transition: opacity .12s ease;
@@ -768,64 +782,86 @@
   }
   renderFixtures();
 
-  /* ============ Knockout bracket (linear left→right) ============ */
-  const ROUND_COL = { R32:0, R16:1, QF:2, SF:3, FINAL:4, "3RD":4 };
+  /* ============ Knockout bracket (two-sided, final in centre) ============ */
   const ROUND_SHORT = { R32:"R32", R16:"R16", QF:"QF", SF:"SF", FINAL:"Final", "3RD":"3rd" };
-  const COL_HEAD = ["Round of 32","Round of 16","Quarter-finals","Semi-finals","Final"];
+  // column per match: 0-3 = left half, 4 = centre (final + 3rd place), 5-8 = right half (mirrored)
+  const KO_COL = {};
+  const koPlace = (c, arr) => arr.forEach(no => KO_COL[no] = c);
+  koPlace(0,[74,77,73,75,83,84,81,82]); koPlace(1,[89,90,93,94]); koPlace(2,[97,98]); koPlace(3,[101]);
+  koPlace(4,[104,103]); koPlace(5,[102]); koPlace(6,[99,100]); koPlace(7,[91,92,95,96]);
+  koPlace(8,[76,78,79,80,86,88,85,87]);
+  const KO_HEADS = ["Round of 32","Round of 16","Quarter-finals","Semi-finals","Final","Semi-finals","Quarter-finals","Round of 16","Round of 32"];
+  const koFeeders = m => [m.s1, m.s2].map(s => { const mm = s.match(/Match (\d+)/); return mm ? +mm[1] : null; });
+
+  // shared inner HTML of a match box (meta line + two resolved slots), used by bracket and mobile list
+  function koBoxInner(m) {
+    const res = koResult(m), sc = koScoreParts(m);
+    const slot = (s, gi) => {
+      const info = slotInfo(s);
+      const flag = info.kind === "team" ? `<img class="ko-flag" src="${FLAG(TEAM[info.abbr].c)}" alt="">` : "";
+      const label = info.kind === "team" ? info.abbr : (info.kind === "pair" ? info.a + "/" + info.b : info.text);
+      const win = res && info.kind === "team" && info.abbr === res.win;
+      const gf = (m.st === "played" && sc) ? `<span class="ko-gf">${sc[gi]}</span>` : "";
+      return `<div class="ko-slot ${win ? "win" : ""} ${info.kind !== "team" ? "tbd" : ""}"><span class="ko-name">${flag}<span class="ko-ab">${label}</span></span>${gf}</div>`;
+    };
+    return `<div class="ko-meta"><span>M${m.no} · ${ROUND_SHORT[m.stage]}</span><span>${shortMD(m.d)}</span></div>${slot(m.s1,0)}${slot(m.s2,1)}`;
+  }
+  // shared data-* attributes for hover tooltip + click-to-open-modal binding
+  const koData = m => `data-no="${m.no}" data-home="${slotName(m.s1,true)}" data-away="${slotName(m.s2,true)}" `
+    + `data-homeflag="${slotFlag(m.s1)}" data-awayflag="${slotFlag(m.s2)}" data-status="${m.st}" data-score="${m.st==='played'?m.s:'Upcoming'}" `
+    + `data-date="${dateLabel(m.d)}" data-t="${m.t}" data-tz="${m.tz}" data-host="${m.host}" data-venue="${m.v}"`;
 
   function renderKnockout() {
     const KO = MATCHES.filter(m => m.stage !== "group");
-    const boxW = 158, boxH = 56, colW = 212, rowH = 72, topPad = 50, leftPad = 14;
-    const colX = c => leftPad + c*colW;
-    const r32order = [74,77,73,75,83,84,81,82,76,78,79,80,86,88,85,87];
+    const boxW = 104, boxH = 54, step = 120, rowH = 62, topPad = 44, pad = 14;
+    const xOf = c => pad + c*step;
     const y = {};
-    r32order.forEach((no,i) => y[no] = topPad + i*rowH + boxH/2);
-    const feeders = m => [m.s1, m.s2].map(s => { const mm = s.match(/Match (\d+)/); return mm ? +mm[1] : null; });
-    ["R16","QF","SF","FINAL"].forEach(rd =>
-      KO.filter(m => m.stage === rd).forEach(m => { const [f1,f2] = feeders(m); y[m.no] = (y[f1]+y[f2])/2; }));
-    y[103] = y[104] + 122;
-    const W = colX(4) + boxW + leftPad, H = topPad + 16*rowH + 28;
+    const L32 = [74,77,73,75,83,84,81,82], R32 = [76,78,79,80,86,88,85,87];
+    L32.forEach((no,i) => y[no] = topPad + i*rowH + boxH/2);
+    R32.forEach((no,i) => y[no] = topPad + i*rowH + boxH/2);
+    [[1,7],[2,6],[3,5]].forEach(pair => pair.forEach(c =>
+      KO.filter(m => KO_COL[m.no] === c).forEach(m => { const [f1,f2] = koFeeders(m); y[m.no] = (y[f1]+y[f2])/2; })));
+    y[104] = (y[101] + y[102]) / 2;
+    y[103] = y[104] + rowH * 1.55;
+    const W = xOf(8) + boxW + pad, H = topPad + 8*rowH + 90;
 
     const GREY = "#3a4a6a", GOLD = "#d4af37";
     const seg = (d, on) => `<path d="${d}" stroke="${on ? GOLD : GREY}" stroke-width="${on ? 2.5 : 1.5}" fill="none" stroke-linecap="round"/>`;
     let lines = "";
-    ["R16","QF","SF","FINAL"].forEach(rd => KO.filter(m => m.stage === rd).forEach(m => {
-      const col = ROUND_COL[rd], [f1,f2] = feeders(m);
-      const xfR = colX(col-1) + boxW, xc = colX(col), midX = xfR + (xc-xfR)/2;
-      const p1 = MByNo[f1] && MByNo[f1].st === "played", p2 = MByNo[f2] && MByNo[f2].st === "played", pm = m.st === "played";
-      lines += seg(`M${xfR} ${y[f1]} H${midX}`, p1) + seg(`M${xfR} ${y[f2]} H${midX}`, p2)
-             + seg(`M${midX} ${y[f1]} V${y[f2]}`, pm) + seg(`M${midX} ${y[m.no]} H${xc}`, pm);
-    }));
+    KO.filter(m => /Match/.test(m.s1)).forEach(m => {
+      const bx = xOf(KO_COL[m.no]), by = y[m.no];
+      koFeeders(m).forEach(f => {
+        if (!f) return;
+        const fx0 = xOf(KO_COL[f]), fxOut = fx0 < bx ? fx0 + boxW : fx0, bxIn = fx0 < bx ? bx : bx + boxW, mid = (fxOut + bxIn) / 2;
+        lines += seg(`M${fxOut} ${y[f]} H${mid} V${by} H${bxIn}`, MByNo[f] && MByNo[f].st === "played");
+      });
+    });
 
     let heads = "";
-    COL_HEAD.forEach((h,c) => heads += `<div class="ko-col-head" style="left:${colX(c)}px;width:${boxW}px;">${h}</div>`);
+    KO_HEADS.forEach((h,c) => heads += `<div class="ko-col-head" style="left:${xOf(c)}px;width:${boxW}px;">${h}</div>`);
 
     let boxes = "";
     KO.forEach(m => {
-      const col = ROUND_COL[m.stage], res = koResult(m), sc = koScoreParts(m);
-      const slot = (s, gi) => {
-        const info = slotInfo(s);
-        const flag = info.kind === "team" ? `<img class="ko-flag" src="${FLAG(TEAM[info.abbr].c)}" alt="">` : "";
-        const label = info.kind === "team" ? info.abbr : (info.kind === "pair" ? info.a + "/" + info.b : info.text);
-        const win = res && info.kind === "team" && info.abbr === res.win;
-        const gf = (m.st === "played" && sc) ? `<span class="ko-gf">${sc[gi]}</span>` : "";
-        return `<div class="ko-slot ${win ? "win" : ""} ${info.kind !== "team" ? "tbd" : ""}"><span class="ko-name">${flag}<span class="ko-ab">${label}</span></span>${gf}</div>`;
-      };
       boxes += `<div class="ko-box ${m.stage==='FINAL'?'ko-final':''} ${m.stage==='3RD'?'ko-third':''} ${m.st==='played'?'played':''}"
-        style="left:${colX(col)}px;top:${y[m.no]-boxH/2}px;width:${boxW}px;height:${boxH}px;" data-no="${m.no}"
-        data-home="${slotName(m.s1,true)}" data-away="${slotName(m.s2,true)}" data-homeflag="${slotFlag(m.s1)}" data-awayflag="${slotFlag(m.s2)}"
-        data-status="${m.st}" data-score="${m.st==='played'?m.s:'Upcoming'}"
-        data-date="${dateLabel(m.d)}" data-t="${m.t}" data-tz="${m.tz}" data-host="${m.host}" data-venue="${m.v}">
-        <div class="ko-meta"><span>M${m.no} · ${ROUND_SHORT[m.stage]}</span><span>${shortMD(m.d)}</span></div>
-        ${slot(m.s1,0)}${slot(m.s2,1)}
-      </div>`;
+        style="left:${xOf(KO_COL[m.no])}px;top:${y[m.no]-boxH/2}px;width:${boxW}px;height:${boxH}px;" ${koData(m)}>${koBoxInner(m)}</div>`;
+    });
+
+    // mobile fallback: round-by-round stacked list (shown under a media query)
+    const STAGES = [["R32","Round of 32"],["R16","Round of 16"],["QF","Quarter-finals"],["SF","Semi-finals"],["FINAL","Final"],["3RD","Third place"]];
+    let list = "";
+    STAGES.forEach(([stg,label]) => {
+      const ms = KO.filter(m => m.stage === stg).sort((a,b) => a.no - b.no);
+      if (!ms.length) return;
+      list += `<div class="kl-round"><div class="kl-rh">${label}</div>`
+        + ms.map(m => `<div class="kl-card ${m.st==='played'?'played':''}" ${koData(m)}>${koBoxInner(m)}</div>`).join("") + `</div>`;
     });
 
     document.getElementById("panel-knockout").innerHTML =
-      `<p class="hint">Hover any match for details · winners advance automatically as results come in</p>
-       <div class="bracket-wrap"><div class="bracket" style="width:${W}px;height:${H}px;">
+      `<p class="hint">Tap or hover any match for details · winners advance automatically as results come in</p>
+       <div class="ko-desktop"><div class="bracket-wrap"><div class="bracket" style="width:${W}px;height:${H}px;">
          <svg class="ko-lines" width="${W}" height="${H}">${lines}</svg>${heads}${boxes}
-       </div></div>`;
+       </div></div></div>
+       <div class="ko-mobile">${list}</div>`;
   }
   renderKnockout();
 
@@ -870,6 +906,7 @@
     el.addEventListener("click", () => openMatch(+el.dataset.no));
   }
   document.querySelectorAll(".ko-box").forEach(el => bindMatchEl(el, true));
+  document.querySelectorAll(".kl-card").forEach(el => bindMatchEl(el, false));
   document.querySelectorAll(".fx-card").forEach(el => bindMatchEl(el, false));
 
   /* ============ match summary modal ============ */
