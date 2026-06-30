@@ -161,6 +161,7 @@
   .m-score { font-size: 22px; font-weight: 800; color: #d4af37; white-space: nowrap; }
   .m-score.upc { font-size: 13px; color: #7d8aa0; font-weight: 700; }
   .m-pen { display: block; font-size: 11.5px; color: #8a97ab; font-weight: 700; margin-top: 2px; }
+  .t-pen { display: block; font-size: 10.5px; color: #f0c64a; font-weight: 700; margin-top: 1px; white-space: nowrap; }
   .m-team.win { color: #f0c64a; font-weight: 800; }
   .m-meta { text-align: center; color: #9aa7bd; font-size: 11.5px; margin-top: 11px; line-height: 1.65; }
   .m-meta .hostflag { display: inline-block; vertical-align: middle; width: 15px; height: 11px; object-fit: cover; border-radius: 2px; margin-right: 5px; }
@@ -207,6 +208,8 @@
   .ko-slot.win .ko-ab { color: #f0c64a; font-weight: 800; }
   .ko-gf { flex: none; font-size: 12px; font-weight: 800; color: #aeb9c9; }
   .ko-slot.win .ko-gf { color: #f0c64a; }
+  .ko-pen { font-size: 10px; font-weight: 700; color: #8a97ab; margin-right: 3px; }
+  .ko-slot.win .ko-pen { color: #f0c64a; }
   .ko-box.played { background: #161f2e; border-color: #3a4a6a; }
   .ko-box.played::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #d4af37; border-radius: 8px 0 0 8px; }
   svg.ko-lines { position: absolute; top: 0; left: 0; z-index: 1; }
@@ -804,15 +807,22 @@
       const flag = info.kind === "team" ? `<img class="ko-flag" src="${FLAG(TEAM[info.abbr].c)}" alt="">` : "";
       const label = info.kind === "team" ? info.abbr : (info.kind === "pair" ? info.a + "/" + info.b : info.text);
       const win = res && info.kind === "team" && info.abbr === res.win;
-      const gf = (m.st === "played" && sc) ? `<span class="ko-gf">${sc[gi]}</span>` : "";
+      let pen = "";
+      if (m.st === "played" && m.pen && res && info.kind === "team") {
+        const pp = m.pen.split("–");
+        if (pp.length === 2) pen = `<span class="ko-pen">(${info.abbr === res.win ? pp[0] : pp[1]})</span>`;
+      }
+      const gf = (m.st === "played" && sc) ? `<span class="ko-gf">${pen}${sc[gi]}</span>` : "";
       return `<div class="ko-slot ${win ? "win" : ""} ${info.kind !== "team" ? "tbd" : ""}"><span class="ko-name">${flag}<span class="ko-ab">${label}</span></span>${gf}</div>`;
     };
     return `<div class="ko-meta"><span>M${m.no} · ${ROUND_SHORT[m.stage]}</span><span>${shortMD(m.d)}</span></div>${slot(m.s1,0)}${slot(m.s2,1)}`;
   }
   // shared data-* attributes for hover tooltip + click-to-open-modal binding
-  const koData = m => `data-no="${m.no}" data-home="${slotName(m.s1,true)}" data-away="${slotName(m.s2,true)}" `
+  const koData = m => { const _r = koResult(m);
+    return `data-no="${m.no}" data-home="${slotName(m.s1,true)}" data-away="${slotName(m.s2,true)}" `
     + `data-homeflag="${slotFlag(m.s1)}" data-awayflag="${slotFlag(m.s2)}" data-status="${m.st}" data-score="${m.st==='played'?m.s:'Upcoming'}" `
-    + `data-date="${dateLabel(m.d)}" data-t="${m.t}" data-tz="${m.tz}" data-host="${m.host}" data-venue="${m.v}"`;
+    + `data-pen="${m.pen||''}" data-penwin="${m.pen&&_r?TEAM[_r.win].n:''}" `
+    + `data-date="${dateLabel(m.d)}" data-t="${m.t}" data-tz="${m.tz}" data-host="${m.host}" data-venue="${m.v}"`; };
 
   function renderKnockout() {
     const KO = MATCHES.filter(m => m.stage !== "group");
@@ -887,7 +897,7 @@
     const chip = e.currentTarget, d = chip.dataset, upc = d.status !== "played";
     const fl = u => u ? `<img class="t-flag" src="${u}" alt="">` : "";
     elTeams.innerHTML = `${fl(d.homeflag)}<span class="nm">${d.home}</span> <span class="nm">–</span> ${fl(d.awayflag)}<span class="nm">${d.away}</span>`;
-    elScore.textContent = upc ? "Upcoming" : d.score;
+    elScore.innerHTML = upc ? "Upcoming" : (d.pen ? `${d.score} <span class="t-pen">${d.penwin} win ${d.pen} pens</span>` : d.score);
     elDate.textContent = d.date;
     elTime.textContent = timeStr(d.t, Number(d.tz));
     elVenue.textContent = d.venue;
@@ -939,7 +949,7 @@
       if (i2.kind === "team") { awayAbbr = i2.abbr; awayImg = `<img src="${FLAG(TEAM[i2.abbr].c)}">`; }
       hWin = !!(res && homeAbbr && res.win === homeAbbr);
       aWin = !!(res && awayAbbr && res.win === awayAbbr);
-      const penTxt = m.pen ? `<span class="m-pen">penalties ${m.pen}</span>` : "";
+      const penTxt = (m.pen && res) ? `<span class="m-pen">${TEAM[res.win].n} win ${m.pen} on penalties</span>` : "";
       scoreHtml = m.st === "played" ? `<span class="m-score">${m.s}${penTxt}</span>` : `<span class="m-score upc">vs</span>`;
     }
     const det = MATCHDETAIL[no];
